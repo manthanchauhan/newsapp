@@ -2,19 +2,9 @@ import React, { Component } from 'react'
 import Navbar from './components/Navbar';
 import News from './components/News';
 import {
-  createBrowserRouter,
-  RouterProvider,
+  Routes,
+  Route,
 } from "react-router-dom";
-
-const router = createBrowserRouter([
-  {path: "/",element: <News pageSize={12} country={"in"}/>,},
-  {path: "/business",element: <News pageSize={12} country={"in"} category={"business"}/>,},
-  {path: "/entertainment",element: <News pageSize={12} country={"in"} category={"entertainment"}/>,},
-  {path: "/health",element: <News pageSize={12} country={"in"} category={"health"}/>,},
-  {path: "/science",element: <News pageSize={12} country={"in"} category={"science"}/>,},
-  {path: "/sports",element: <News pageSize={12} country={"in"} category={"sports"}/>,},
-  {path: "/technology",element: <News pageSize={12} country={"in"} category={"technology"}/>,},
-]);
 
 export default class App extends Component {
   render() {
@@ -22,7 +12,15 @@ export default class App extends Component {
       <div>
         <React.StrictMode>
           <Navbar/> 
-          <RouterProvider router={router} />
+          <Routes>
+            <Route path="/" element={<News key="general" pageSize={12} country={"in"} category={"general"}/>}/>
+            <Route path="/business" element={<News key="business" pageSize={12} country={"in"} category={"business"}/>}/>
+            <Route path="/entertainment" element={<News key="entertainment" pageSize={12} country={"in"} category={"entertainment"}/>}/>
+            <Route path="/health" element={<News key="health" pageSize={12} country={"in"} category={"health"}/>}/> 
+            <Route path="/science" element={<News key="science" pageSize={12} country={"in"} category={"science"}/>}/> 
+            <Route path="/sports" element={<News key="sports" pageSize={12} country={"in"} category={"sports"}/>}/>
+            <Route path="/technology" element={<News key="technology" pageSize={12} country={"in"} category={"technology"}/>}/>
+          </Routes>
         </React.StrictMode>
       </div>
     )

@@ -7,7 +7,7 @@ export default class App extends Component {
     return (
       <div>
         <Navbar/>
-        <News/>
+        <News pageSize={12} defaultImageUrl={"https://images.moneycontrol.com/static-mcnews/2022/07/stocks_nifty_sensex-770x433.jpg"}/>
       </div>
     )
   }

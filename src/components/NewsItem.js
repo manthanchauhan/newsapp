@@ -78,7 +78,7 @@ export class NewsItem extends Component {
             <p className="card-text" style={{height: '75px', overflow: 'hidden', marginBottom: '8px'}}>
               {description}
             </p>
-            <a href={newsUrl} style={{color: 'black', paddingLeft: '0px'}} className="btn btn-link btn-sm">
+            <a href={newsUrl} style={{color: 'black', paddingLeft: '0px'}} className="btn btn-link btn-sm stretched-link">
               Read more
             </a>
           </div>

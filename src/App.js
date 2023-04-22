@@ -1,13 +1,29 @@
 import React, { Component } from 'react'
 import Navbar from './components/Navbar';
 import News from './components/News';
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router-dom";
+
+const router = createBrowserRouter([
+  {path: "/",element: <News pageSize={12} country={"in"}/>,},
+  {path: "/business",element: <News pageSize={12} country={"in"} category={"business"}/>,},
+  {path: "/entertainment",element: <News pageSize={12} country={"in"} category={"entertainment"}/>,},
+  {path: "/health",element: <News pageSize={12} country={"in"} category={"health"}/>,},
+  {path: "/science",element: <News pageSize={12} country={"in"} category={"science"}/>,},
+  {path: "/sports",element: <News pageSize={12} country={"in"} category={"sports"}/>,},
+  {path: "/technology",element: <News pageSize={12} country={"in"} category={"technology"}/>,},
+]);
 
 export default class App extends Component {
   render() {
     return (
       <div>
-        <Navbar/>
-        <News pageSize={12} defaultImageUrl={"https://images.moneycontrol.com/static-mcnews/2022/07/stocks_nifty_sensex-770x433.jpg"}/>
+        <React.StrictMode>
+          <Navbar/> 
+          <RouterProvider router={router} />
+        </React.StrictMode>
       </div>
     )
   }

@@ -44,26 +44,36 @@ export class News extends Component {
   };
 
   async componentDidMount() {
-    await this.fetchData(1);
+    this.props.setProgress(0);
+    await this.fetchData(1, true);
+    this.props.setProgress(100);
   }
 
   handleNextClick = async () => {
-    await this.fetchData(this.state.page + 1);
+    await this.fetchData(this.state.page + 1, false);
     this.setState({
       page: this.state.page + 1,
     });
   };
 
   handlePreviousClick = async () => {
-    await this.fetchData(this.state.page - 1);
+    await this.fetchData(this.state.page - 1, false);
     this.setState({
       page: this.state.page - 1,
     });
   };
 
-  getNewsFromApi = async (page) => {
+  getNewsFromApi = async (page, ifShowPgb) => {
+    if (ifShowPgb){
+      this.props.setProgress(20)
+    }
+    
     let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&apiKey=${this.newDotOrgApiKey}&pageSize=${this.props.pageSize}&page=${page}&category=${this.props.category}`;
     let data = await fetch(url);
+    
+    if (ifShowPgb){
+      this.props.setProgress(50)
+    }
 
     let parsedData;
 
@@ -73,11 +83,21 @@ export class News extends Component {
       parsedData = await data.json();
     }
 
+    if (ifShowPgb){
+      this.props.setProgress(80)
+    }
+
     return parsedData;
   }
 
-  fetchData = async (page) => {
-    let parsedData = await this.getNewsFromApi(page);
+  fetchData = async (page, ifShowPgb) => {
+    this.props.setProgress(10)
+
+    let parsedData = await this.getNewsFromApi(page, ifShowPgb);
+
+    if (ifShowPgb){
+      this.props.setProgress(90)
+    }
 
     this.setState({
       articles: parsedData.articles,
@@ -105,7 +125,7 @@ export class News extends Component {
   };
 
   fetchMoreData = async ()=>{
-    let parsedData = await this.getNewsFromApi(this.state.page+1);
+    let parsedData = await this.getNewsFromApi(this.state.page+1, false);
     
     this.setState({
       page: this.state.page + 1,
@@ -123,7 +143,7 @@ export class News extends Component {
             : `${this.titleCase(this.props.category)} `}
           Headlines
         </h1>
-        {this.state.loading && <Spinner/>}
+        {/* {this.state.loading && <Spinner/>} */}
 
         <InfiniteScroll
           dataLength={this.state.articles.length}

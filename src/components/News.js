@@ -6,8 +6,6 @@ import PropTypes from "prop-types";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 export class News extends Component {
-  newDotOrgApiKey = "19c312175037427d8eb5e72335c7ad1c";
-
   static defaultProps = {
     country: "in",
     pageSize: 12,
@@ -68,7 +66,7 @@ export class News extends Component {
       this.props.setProgress(20)
     }
     
-    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&apiKey=${this.newDotOrgApiKey}&pageSize=${this.props.pageSize}&page=${page}&category=${this.props.category}`;
+    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&apiKey=${this.props.newsDotOrgApiKey}&pageSize=${this.props.pageSize}&page=${page}&category=${this.props.category}`;
     let data = await fetch(url);
     
     if (ifShowPgb){

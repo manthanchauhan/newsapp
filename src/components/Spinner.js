@@ -1,21 +1,28 @@
-import React, { Component } from 'react'
-import spinner from '../spinner.gif'
-import PropTypes from 'prop-types'
+import React from "react";
+import spinner from "../spinner.gif";
+import PropTypes from "prop-types";
 
-export default class Spinner extends Component {
-  static propTypes = {
-    width: PropTypes.number.isRequired,
-  }
+const Spinner = (props) => {
+  return (
+    <div className="text-center">
+      <img
+        src={spinner}
+        alt="loading"
+        style={{
+          height: `${props.width}px`,
+          width: `${props.width}px`,
+        }}
+      />
+    </div>
+  );
+};
 
-  static defaultProps = {
-    width: 30
-  }
+Spinner.propTypes = {
+  width: PropTypes.number.isRequired,
+};
 
-  render() {
-    return (
-      <div className='text-center'>
-        <img src={spinner} alt='loading' style={{height: `${this.props.width}px`, width: `${this.props.width}px`}}/>
-      </div>
-    )
-  }
-}
+Spinner.defaultProps = {
+  width: 30,
+};
+
+export default Spinner;

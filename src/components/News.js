@@ -1,39 +1,16 @@
-import React, { Component } from "react";
+import React, {useState, useEffect} from "react";
 import NewsItem from "./NewsItem";
 import Spinner from "./Spinner";
 import SampleResponse from "../sampleResponse.json";
 import PropTypes from "prop-types";
 import InfiniteScroll from "react-infinite-scroll-component";
 
-export class News extends Component {
-  static defaultProps = {
-    country: "in",
-    pageSize: 12,
-    defaultImageUrl:
-      "https://images.moneycontrol.com/static-mcnews/2022/07/stocks_nifty_sensex-770x433.jpg",
-    category: "general",
-  };
+const News = (props)=>{
+  const [articles, setArticles] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalResults, setTotalResults] = useState(0);
 
-  static propTypes = {
-    country: PropTypes.string,
-    pageSize: PropTypes.number,
-    defaultImageUrl: PropTypes.string,
-    category: PropTypes.string,
-  };
-
-  constructor(props) {
-    super();
-    this.state = {
-      articles: [],
-      loading: true,
-      page: 1,
-      totalResults: 0,
-    };
-
-    document.title = `${this.titleCase(props.category)} - NewsLion`;
-  }
-
-  titleCase = (str) => {
+  const titleCase = (str) => {
     let words = str.toLowerCase().split(" ");
     for (let i = 0; i < words.length; i++) {
       words[i] = words[i][0].toUpperCase() + words[i].slice(1);
@@ -41,36 +18,36 @@ export class News extends Component {
     return words.join(" ");
   };
 
-  async componentDidMount() {
-    this.props.setProgress(0);
-    await this.fetchData(1, true);
-    this.props.setProgress(100);
-  }
+  const fetchData = async (page, ifShowPgb) => {
+    props.setProgress(10)
 
-  handleNextClick = async () => {
-    await this.fetchData(this.state.page + 1, false);
-    this.setState({
-      page: this.state.page + 1,
-    });
-  };
+    let parsedData = await getNewsFromApi(page, ifShowPgb);
 
-  handlePreviousClick = async () => {
-    await this.fetchData(this.state.page - 1, false);
-    this.setState({
-      page: this.state.page - 1,
-    });
-  };
-
-  getNewsFromApi = async (page, ifShowPgb) => {
     if (ifShowPgb){
-      this.props.setProgress(20)
+      props.setProgress(90)
+    }
+
+    setArticles(parsedData.articles)
+    setTotalResults(parsedData.totalResults)
+  };
+
+  useEffect(() => {
+    props.setProgress(0);
+    fetchData(1, true).then(()=>{props.setProgress(100);})
+    document.title = `${titleCase(props.category)} - NewsLion`;
+
+  }, [])
+
+  const getNewsFromApi = async (page, ifShowPgb) => {
+    if (ifShowPgb){
+      props.setProgress(20)
     }
     
-    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&apiKey=${this.props.newsDotOrgApiKey}&pageSize=${this.props.pageSize}&page=${page}&category=${this.props.category}`;
+    let url = `https://newsapi.org/v2/top-headlines?country=${props.country}&apiKey=${props.newsDotOrgApiKey}&pageSize=${props.pageSize}&page=${page}&category=${props.category}`;
     let data = await fetch(url);
     
     if (ifShowPgb){
-      this.props.setProgress(50)
+      props.setProgress(50)
     }
 
     let parsedData;
@@ -82,75 +59,37 @@ export class News extends Component {
     }
 
     if (ifShowPgb){
-      this.props.setProgress(80)
+      props.setProgress(80)
     }
 
     return parsedData;
   }
 
-  fetchData = async (page, ifShowPgb) => {
-    this.props.setProgress(10)
-
-    let parsedData = await this.getNewsFromApi(page, ifShowPgb);
-
-    if (ifShowPgb){
-      this.props.setProgress(90)
-    }
-
-    this.setState({
-      articles: parsedData.articles,
-      loading: false,
-      totalResults: parsedData.totalResults,
-    });
-  };
-
-  showPrevButton = () => {
-    return !(this.state.page === 1);
-  };
-
-  showNextButton = () => {
-    return !(this.state.totalResults <= this.state.page * this.props.pageSize);
-  };
-
-  getBtnContentJustification = () => {
-    if (this.showPrevButton() && this.showNextButton()) {
-      return "between";
-    } else if (this.showPrevButton()) {
-      return "start";
-    } else {
-      return "end";
-    }
-  };
-
-  fetchMoreData = async ()=>{
-    let parsedData = await this.getNewsFromApi(this.state.page+1, false);
+  const fetchMoreData = async ()=>{
+    let parsedData = await getNewsFromApi(page+1, false);
     
-    this.setState({
-      page: this.state.page + 1,
-      articles: this.state.articles.concat(parsedData.articles)
-    });
+    setPage(page+1)
+    setArticles(articles.concat(parsedData.articles))
   }
 
-  render() {
     return (
       <div className="container my-3">
-        <h1 className="text-left">
+        <h1 className="text-left" style={{marginTop: '70px'}}>
           Top{" "}
-          {this.props.category === "general"
+          {props.category === "general"
             ? ""
-            : `${this.titleCase(this.props.category)} `}
+            : `${titleCase(props.category)} `}
           Headlines
         </h1>
-        {/* {this.state.loading && <Spinner/>} */}
 
         <InfiniteScroll
-          dataLength={this.state.articles.length}
-          next={this.fetchMoreData}
-          hasMore={this.state.articles.length < this.state.totalResults}
+          dataLength={articles.length}
+          next={fetchMoreData}
+          hasMore={articles.length < totalResults}
           loader={<Spinner/>}
         >
           <div className="row">
-            {this.state.articles.map((element) => {
+            {articles.map((element) => {
               return (
                 <div
                   className="col-12 col-md-6 col-lg-4 col-xxl-3"
@@ -162,7 +101,7 @@ export class News extends Component {
                     imageUrl={
                       element.urlToImage
                         ? element.urlToImage
-                        : this.props.defaultImageUrl
+                        : props.defaultImageUrl
                     }
                     newsUrl={element.url}
                     publishedAt={element.publishedAt}
@@ -177,6 +116,20 @@ export class News extends Component {
       </div>
     );
   }
-}
+
+News.defaultProps = {
+  country: "in",
+  pageSize: 12,
+  defaultImageUrl:
+    "https://images.moneycontrol.com/static-mcnews/2022/07/stocks_nifty_sensex-770x433.jpg",
+  category: "general",
+};
+
+News.propTypes = {
+  country: PropTypes.string,
+  pageSize: PropTypes.number,
+  defaultImageUrl: PropTypes.string,
+  category: PropTypes.string,
+};
 
 export default News;
